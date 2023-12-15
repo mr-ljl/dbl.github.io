@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>营销模块演示</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <style>
+        .container {
+                width: 100%;
+   
+    perspective: 1000px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .card.flip {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+        }
+
+        .front {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transform: rotateY(0deg);
+        }
+
+        .back {
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotateY(180deg);
+        }
+.imgnav{
+position: fixed;
+    display: block;
+    width: 100%;
+    height: 62px;
+    left: 0;
+    top: 0;
+}
+.imgfile{
+display: block;
+width:100%;
+height:auto;
+}
+.imgscrool{
+position: absolute;
+left:0px;
+top:62px;
+right:0px;
+bottom:0px;
+overflow: scroll;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container" onclick="handlerCard()">
+        <div class="card" id="card">
+            <div class="face front">
+                <img src="./images/index.png" alt="" >
+            </div>
+            <div class="face back">
+                <img class="imgnav" src="./images/nav.png" alt="" >
+                <div class="imgscrool"><img class="imgfile" src="./images/file.png" alt="" ></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 链接跳转 
+    <h3 class="jump-til">点击链接跳转</h3>
+    <ul class="jump-con">
+        <li class="jump-item"><a href="./index1.html"><img src="./images/img1.png" alt="" ></a></li>
+        <li class="jump-item"><a href="./index2.html"><img src="./images/img2.png" alt="" ></a></li>
+        <li class="jump-item"><a href="./index3.html"><img src="./images/img3.png" alt="" ></a></li>
+        <li class="jump-item"><a href="./index4.html"><img src="./images/img4.png" alt="" ></a></li>
+        <li class="jump-item"><a href="./index5.html"><img src="./images/img5.png" alt="" ></a></li>
+    </ul>
+-->
+
+    <!-- 验证码弹窗 -->
+    <div class="mask">
+        <div class="mask-con">
+            <img class="mask-close" src="./images/close.png" alt="">
+            <p class="code-til">请输入登陆密码</p>
+            <p class="code-tips">退出营销模式需要验证密码</p>
+            <p class="code-wrong">密码错误！</p>
+            <div class="code-main">
+                <ul class="code-dline-con">
+                    <li class="code-dline"></li>
+                    <li class="code-dline"></li>
+                    <li class="code-dline"></li>
+                    <li class="code-dline"></li>
+                </ul>
+                <input type="password" class="code-ipt" maxlength="4" value="" autofocus="autofocus" />
+            </div>
+        </div>
+    </div>
+    <script>
+        var password = '8888';//验证码密码
+        var angle = 180;//翻转角度
+        var num = 1;//第几次翻转
+        var mask = document.querySelector('.mask');
+        var codeIpt = document.querySelector('.code-ipt');
+        var maskClose = document.querySelector('.mask-close');
+        var codeWrong = document.querySelector('.code-wrong');
+        
+
+        init();
+        // 初始化
+        function init(){
+            mask.style.display = 'none';
+            codeIpt.value = '';
+            // 清除记录密码弹框状态
+            localStorage.clear('showCode')
+        }
+
+        // 翻转卡片
+        function handlerCard() {
+            var showCode = localStorage.getItem('showCode');
+            console.log("showCode",showCode);
+            if(showCode || num == 1){
+                flipCard();
+            }else{
+                mask.style.display = 'block';
+                codeIpt.focus();  
+            }
+        }
+        
+        // 翻转卡片
+        function flipCard() {
+            const card = document.getElementById('card');
+            // card.classList.toggle('flip');            
+            card.style.transform = 'rotateY(-'+angle*num+'deg)';
+            num++;
+            console.log(num);
+        }
+
+        // 监听验证码输入
+        codeIpt.addEventListener('input',function(e){
+            var val = this.value;
+            console.log(val);
+            val = val.substr(0,4);
+            console.log(val,val.length);
+            codeWrong.style.display = 'none';   
+            if(val.length==4){
+                if(val == password){
+                    val = '';
+                    mask.style.display = 'none';
+                    setTimeout(() => {
+                        flipCard();
+                        localStorage.setItem('showCode',1);
+                    }, 1000);
+                }else{
+                    val = '';
+                    codeWrong.style.display = 'block';                    
+                }
+            }
+            this.value = val;
+        })
+
+        // 点击关闭按钮
+        maskClose.addEventListener('click',function(){
+            mask.style.display = 'none';
+        })
+    </script>
+</body>
+</html>
